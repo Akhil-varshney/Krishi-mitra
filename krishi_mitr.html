@@ -132,15 +132,13 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
-      </style>
-      
-      <body class="flex flex-col items-center justify-center min-h-screen bg-center relative"
-            style="background-image: url('ab.jpg');">
-          <!-- Background Overlay -->
-          <div class="absolute inset-0 bg-black bg-opacity-0"></div>
-      
+    </style>
+    
+    <body class="flex flex-col items-center justify-center min-h-screen bg-center relative"
+        style="background-image: url('ab.jpg');">
+        <div class="absolute inset-0 bg-black bg-opacity-0"></div>
+    
 
-    <!-- Top Bar -->
     <header class="bg-gradient-to-r from-gray-800 to-gray-900 text-white p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold"><i class="fas fa-leaf text-green-300 mr-2"></i>Krishi-Mitra AI Advisory</h1>
@@ -152,12 +150,10 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <div class="flex-grow flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-11/12 max-w-4xl flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-8 transform transition-all duration-500 hover:scale-[1.01]">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-11/12 max-w-7xl flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-8 transform transition-all duration-500 hover:scale-[1.01]">
 
-            <!-- Left Panel: Info & Features -->
-            <div class="md:w-1/2 p-4 bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl flex flex-col justify-between shadow-inner">
+            <div class="md:w-1/4 p-4 bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl flex flex-col justify-between shadow-inner">
                 <div>
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center space-x-2">
@@ -166,27 +162,25 @@
                         </div>
                     </div>
                     <p class="text-gray-600 text-sm mb-6">AI-Powered Farmer Advisory</p>
-                    <!-- Language Buttons -->
                     <div class="grid grid-cols-2 gap-2 mb-6">
                         <button id="lang-en" class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-full hover:bg-gray-300 transition-colors">English</button>
                         <button id="lang-hi" class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-full hover:bg-gray-300 transition-colors">हिन्दी</button>
                         <button id="lang-ta" class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-full hover:bg-gray-300 transition-colors">தமிழ்</button>
                         <button id="lang-kn" class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-full hover:bg-gray-300 transition-colors">ಕನ್ನಡ</button>
                     </div>
-                    <!-- Feature Buttons -->
                     <div class="mt-8 flex flex-col items-center justify-center space-y-4">
-                         <button id="dailyAdvisoryButton" class="btn-primary w-full p-3 rounded-xl shadow-lg">
-                             <i class="fas fa-sun mr-2"></i>✨ Daily Advisory
-                         </button>
-                         <button id="imageAnalysisButton" class="btn-primary w-full p-3 rounded-xl shadow-lg">
-                             <i class="fas fa-camera mr-2"></i>✨ Image Analysis
-                         </button>
-                         <button id="govtSchemesButton" class="btn-primary w-full p-3 rounded-xl shadow-lg">
+                       <button id="dailyAdvisoryButton" class="btn-primary w-full p-3 rounded-xl shadow-lg">
+                            <i class="fas fa-sun mr-2"></i>✨ Daily Advisory
+                       </button>
+                       <button id="imageAnalysisButton" class="btn-primary w-full p-3 rounded-xl shadow-lg">
+                            <i class="fas fa-camera mr-2"></i>✨ Image Analysis
+                       </button>
+                       <button id="govtSchemesButton" class="btn-primary w-full p-3 rounded-xl shadow-lg">
                             <i class="fas fa-hand-holding-usd mr-2"></i>✨ Govt Schemes
                         </button>
                         <button id="marketPriceButton" class="btn-primary w-full p-3 rounded-xl shadow-lg">
-                             <i class="fas fa-chart-line mr-2"></i>✨ Market Price
-                         </button>
+                            <i class="fas fa-chart-line mr-2"></i>✨ Market Price
+                        </button>
                     </div>
                 </div>
                 
@@ -222,67 +216,59 @@
                 </div>
             </div>
 
-            <!-- Right Panel: Chat Interface -->
             <div class="md:w-1/2 flex flex-col p-4 bg-gray-50 rounded-2xl">
                 <div id="chat-container" class="chat-container flex flex-col p-4 space-y-4 flex-grow">
-                    <!-- Initial welcome message -->
                     <div class="ai-message message-bubble self-start shadow-md">
                         <p>Hello! I am Krishi-Mitra, your AI assistant. How can I help you with your farm today?</p>
                         <span class="message-timestamp"></span>
                     </div>
                 </div>
 
-                <!-- Message Input & Send Button -->
                 <div class="flex items-center space-x-2 mt-4">
                     <input type="text" id="userInput" class="flex-grow p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800" placeholder="Ask your question here...">
                     <button id="micButton" class="btn-primary p-3 rounded-xl shadow-lg">
-                         <i class="fas fa-microphone"></i>
-                     </button>
+                           <i class="fas fa-microphone"></i>
+                       </button>
                     <button id="sendButton" class="btn-primary p-3 rounded-xl shadow-lg">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
-             <!-- Right Panel: Govt Schemes -->
-  <div class="hidden lg:flex lg:w-1/4 flex-col bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-4 shadow-inner space-y-4">
-    <h2 class="text-xl font-bold text-gray-800 flex items-center">
-      <i class="fas fa-hand-holding-usd mr-2 text-green-600"></i> Govt Schemes
-    </h2>
-    <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-green-500 hover:shadow-lg transition">
-      <h3 class="font-semibold text-gray-800 text-sm">PM Kisan Samman Nidhi</h3>
-      <p class="text-xs text-gray-600">₹6000 annually to small & marginal farmers.</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-blue-500 hover:shadow-lg transition">
-      <h3 class="font-semibold text-gray-800 text-sm">Soil Health Card</h3>
-      <p class="text-xs text-gray-600">Free soil testing & fertilizer advice.</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-yellow-500 hover:shadow-lg transition">
-      <h3 class="font-semibold text-gray-800 text-sm">Crop Insurance (PMFBY)</h3>
-      <p class="text-xs text-gray-600">Protection from crop losses due to disasters.</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-purple-500 hover:shadow-lg transition">
-        <h3 class="font-semibold text-gray-800 text-sm">Kisan Credit Card</h3>
-        <p class="text-xs text-gray-600">Low-interest loans for seeds, fertilizers & equipment.</p>
-    </div>
-    
-    <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-red-500 hover:shadow-lg transition">
-        <h3 class="font-semibold text-gray-800 text-sm">Pradhan Mantri Krishi Sinchai Yojana</h3>
-        <p class="text-xs text-gray-600">Improved irrigation facilities to ensure water for all farms.</p>
-    </div>
-    
-    <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-pink-500 hover:shadow-lg transition">
-        <h3 class="font-semibold text-gray-800 text-sm">National Mission on Sustainable Agriculture</h3>
-        <p class="text-xs text-gray-600">Support for climate-resilient farming practices.</p>
-    </div>
-    <button id="moreSchemes" class="btn-primary w-full rounded-xl mt-2">
-      <i class="fas fa-plus-circle mr-1"></i> View More
-    </button>
-</div>
+             <div class="hidden lg:flex lg:w-1/4 flex-col bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-4 shadow-inner space-y-4">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-hand-holding-usd mr-2 text-green-600"></i> Govt Schemes
+                </h2>
+                <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-green-500 hover:shadow-lg transition">
+                    <h3 class="font-semibold text-gray-800 text-sm">PM Kisan Samman Nidhi</h3>
+                    <p class="text-xs text-gray-600">₹6000 annually to small & marginal farmers.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-blue-500 hover:shadow-lg transition">
+                    <h3 class="font-semibold text-gray-800 text-sm">Soil Health Card</h3>
+                    <p class="text-xs text-gray-600">Free soil testing & fertilizer advice.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-yellow-500 hover:shadow-lg transition">
+                    <h3 class="font-semibold text-gray-800 text-sm">Crop Insurance (PMFBY)</h3>
+                    <p class="text-xs text-gray-600">Protection from crop losses due to disasters.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-purple-500 hover:shadow-lg transition">
+                        <h3 class="font-semibold text-gray-800 text-sm">Kisan Credit Card</h3>
+                        <p class="text-xs text-gray-600">Low-interest loans for seeds, fertilizers & equipment.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-3 border-l-4 border-red-500 hover:shadow-lg transition">
+                        <h3 class="font-semibold text-gray-800 text-sm">Pradhan Mantri Krishi Sinchai Yojana</h3>
+                        <p class="text-xs text-gray-600">Improved irrigation facilities to ensure water for all farms.</p>
+                </div>
+                
+                
+                <button id="moreSchemes" class="btn-primary w-full rounded-xl mt-2">
+                    <i class="fas fa-plus-circle mr-1"></i> View More
+                </button>
+            </div>
 
         </div>
     </div>
     
-    <!-- Modal for image upload -->
     <div id="imageModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-xl shadow-xl w-11/12 max-w-md">
             <h2 class="text-2xl font-bold mb-4 text-gray-800">Upload an Image</h2>
@@ -294,8 +280,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Modal for confirmation/alerts -->
     <div id="alertModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-xl shadow-xl w-11/12 max-w-md text-center">
             <h2 id="alertTitle" class="text-xl font-bold mb-4 text-gray-800"></h2>
@@ -521,14 +505,14 @@
                     const messageContent = document.createElement('p');
                     const points = text.split('\n').filter(line => line.trim() !== '');
                     if (points.length > 1) {
-                         const ul = document.createElement('ul');
-                         ul.classList.add('list-disc', 'list-inside');
-                         points.forEach(point => {
-                             const li = document.createElement('li');
-                             li.textContent = point.trim();
-                             ul.appendChild(li);
-                         });
-                         messageContent.appendChild(ul);
+                            const ul = document.createElement('ul');
+                            ul.classList.add('list-disc', 'list-inside');
+                            points.forEach(point => {
+                                const li = document.createElement('li');
+                                li.textContent = point.trim();
+                                ul.appendChild(li);
+                            });
+                            messageContent.appendChild(ul);
                     } else {
                         messageContent.textContent = text;
                     }
