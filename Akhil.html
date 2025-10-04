@@ -95,6 +95,66 @@
                 transform: translateX(-100%);
             }
         }
+        .img-placeholder {
+            width: 100%;
+            height: 200px; 
+            overflow: hidden; 
+            border-radius: 0.5rem;
+        }
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 450px; /* Slightly wider to accommodate the dropdown */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        #weather-info-box {
+            text-align: left;
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+        .state-select-container {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        #state-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 0.375rem;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -104,11 +164,14 @@
             <h1 class="text-3xl font-bold flex items-center" id="header-title">
                 <i class="fas fa-leaf mr-3 text-green-300"></i> Krishi Mitra AI
             </h1>
-            <nav class="space-x-6 hidden md:block">
+            <nav class="space-x-4 flex items-center hidden md:flex">
                 <a href="#about" class="hover:text-green-200 transition-colors" id="nav-about">About Us</a>
                 <a href="#features" class="hover:text-green-200 transition-colors" id="nav-features">Features</a>
                 <a href="#objectives" class="hover:text-green-200 transition-colors" id="nav-objectives">Objectives</a>
                 <a href="#contact" class="hover:text-green-200 transition-colors" id="nav-contact">Contact</a>
+                <button id="weather-button" class="text-white hover:text-green-200 transition-colors p-2 rounded-full hover:bg-green-700" title="Today's Weather">
+                    <i class="fas fa-cloud-sun text-xl"></i>
+                </button>
             </nav>
             <button class="md:hidden text-white text-xl">
                 <i class="fas fa-bars"></i>
@@ -125,13 +188,11 @@
                 <p class="text-xl text-gray-700 mb-8 max-w-3xl mx-auto" id="hero-subheading">
                     Krishi Mitra AI provides automated, data-driven insights and personalized guidance to help farmers thrive in a changing world.
                 </p>
-                <!-- Moving Line -->
                 <div class="flex justify-center mb-8">
                     <div id="moving-line" class="text-xl font-semibold text-green-700">
                         Welcome To Krishi-Mitra powered by AI
                     </div>
                 </div>
-                <!-- End Moving Line -->
                 <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
                     <a href="krishi_mitr.html" class="button-primary text-lg inline-block hover:shadow-lg transform hover:scale-105" id="chat-button">
                         <i class="fas fa-robot mr-2"></i> Start Chatting Now
@@ -155,19 +216,16 @@
                 <p class="text-lg text-gray-700 max-w-4xl mx-auto leading-relaxed" id="about-text">
                     Krishi Mitra AI is an innovative platform dedicated to transforming traditional farming practices through artificial intelligence. We believe that every farmer, regardless of their scale or location, deserves access to cutting-edge information and support. Our system analyzes real-time data on weather, soil, crop health, and market trends to deliver actionable advice, helping farmers make informed decisions and achieve better yields.
                 </p>
-                <!-- YouTube Video Embed -->
                 <div class="mt-10 video-container">
-                    <!-- Replace the video ID 'T5yC2R4-g2g' with your desired YouTube video ID -->
                     <iframe src="https://www.youtube.com/embed/UhZAgYPXmCk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
-                <!-- End YouTube Video Embed -->
-            </div>
+                </div>
         </section>
 
         <section class="py-16 bg-gradient-to-br from-green-50 to-blue-50" id="features">
             <div class="container">
                 <h2 class="text-4xl font-bold text-green-700 text-center mb-12" id="features-heading">Key Features</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="feature-card flex flex-col items-center text-center">
                         <div class="img-placeholder h-48 mb-4">
                             <img src="https://image.pollinations.ai/prompt/AI robot analyzing plant leaf for disease, macro photography, futuristic farming, vibrant green, detailed" alt="AI analyzing plant">
@@ -228,7 +286,7 @@
         <section class="py-16 bg-white" id="objectives">
             <div class="container">
                 <h2 class="text-4xl font-bold text-green-700 text-center mb-12" id="objectives-heading">Our Core Objectives & Goals</h2>
-                <div class="grid md:grid-cols-2 gap-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div>
                         <div class="objective-item">
                             <i class="fas fa-chart-line objective-icon"></i>
@@ -318,284 +376,374 @@
         </div>
     </footer>
 
+    <div id="dynamic-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold text-green-700 mb-4" id="modal-heading-text">Today's Weather</h3>
+            
+            <div class="state-select-container">
+                <label for="state-select" class="block text-sm font-medium text-gray-700" id="select-state-label">Select Your State:</label>
+                <select id="state-select" class="mt-1 block focus:ring-green-500 focus:border-green-500">
+                    </select>
+            </div>
+
+            <div id="weather-info-box" class="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <p class="text-center font-semibold text-lg" id="weather-status-message">Please select a state to view advisory.</p>
+                </div>
+            
+            <button class="button-primary mt-4 w-full" id="modal-close-button">Close</button>
+        </div>
+    </div>
     <script>
+        // --- Centralized Indian States Data for Dropdown ---
+        const indianStates = [
+            "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+            "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+            "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
+            "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi (NCT)", "Puducherry (UT)"
+        ];
+        
+        // --- Simulated Weather Data by State (for demonstration) ---
+        // In a real application, this would be fetched from a live API.
+        const simulatedWeather = {
+            // Hot/Dry States
+            "Rajasthan": { temp: "38°C / 100°F", condition: "Heatwave Alert", advice: "Reduce irrigation frequency and avoid fieldwork between 11 AM and 4 PM. Use white sheets to reflect heat and protect vulnerable crops." },
+            "Gujarat": { temp: "35°C / 95°F", condition: "Clear & Hot", advice: "Maintain mulching to conserve moisture. Check windbreaks and prepare for dust control." },
+            // Monsoon/Tropical States
+            "Kerala": { temp: "26°C / 79°F", condition: "Heavy Rain Expected", advice: "Ensure good drainage to prevent waterlogging, especially for ginger and turmeric. Apply preventative fungicide treatments." },
+            "West Bengal": { temp: "30°C / 86°F", condition: "Humid & Cloudy", advice: "Monitor paddy fields for brown spot disease. Use only necessary fertilizers, as heavy rain may wash them away." },
+            // Wheat/Sugarcane Belt States
+            "Uttar Pradesh": { temp: "32°C / 90°F", condition: "Clear skies", advice: "Prepare fields for post-monsoon planting. Check irrigation lines and maintain soil moisture for sugarcane." },
+            "Punjab": { temp: "34°C / 93°F", condition: "Dry & Sunny", advice: "Continue deep ploughing to prepare the soil. Pre-sow irrigation for Rabi crops can commence." },
+            // Default
+            "Default": { temp: "28°C / 82°F", condition: "Clear skies", advice: "Ideal day for fieldwork. Monitor moisture levels closely and prepare tools for upcoming seasonal changes." }
+        };
+
         const translations = {
             en: {
                 title: 'Krishi Mitra AI - Automated Farmer Advisory System',
                 headerTitle: 'Krishi Mitra AI',
-                navAbout: 'About Us',
-                navFeatures: 'Features',
-                navObjectives: 'Objectives',
-                navContact: 'Contact',
+                navAbout: 'About Us', navFeatures: 'Features', navObjectives: 'Objectives', navContact: 'Contact',
+                weatherModalHeading: "Today's Weather & Advisory",
+                selectStateLabel: "Select Your State:",
+                initialWeatherMessage: "Please select a state to view advisory.",
+                weatherLoading: "Fetching live advisory for",
+                weatherLocation: (location) => location,
+                weatherTemp: (temp) => `<strong>Temperature:</strong> ${temp}`,
+                weatherCondition: (condition) => `<strong>Condition:</strong> ${condition}`,
+                weatherWind: (wind) => `<strong>Wind Speed:</strong> ${wind}`,
+                weatherAdviceHeader: "Farm Advisory:",
                 heroHeading: 'Empowering Farmers with <br class="hidden sm:inline"> Intelligent Advisory',
                 heroSubheading: 'Krishi Mitra AI provides automated, data-driven insights and personalized guidance to help farmers thrive in a changing world.',
-                chatButton: 'Start Chatting Now',
-                learnMoreButton: 'About Us',
-                aboutHeading: 'About Krishi Mitra AI',
+                movingLine: 'Welcome To Krishi-Mitra powered by AI',
+                chatButton: 'Start Chatting Now', learnMoreButton: 'About Us', aboutHeading: 'About Krishi Mitra AI',
                 aboutText: 'Krishi Mitra AI is an innovative platform dedicated to transforming traditional farming practices through artificial intelligence. We believe that every farmer, regardless of their scale or location, deserves access to cutting-edge information and support. Our system analyzes real-time data on weather, soil, crop health, and market trends to deliver actionable advice, helping farmers make informed decisions and achieve better yields.',
-                featuresHeading: 'Key Features',
-                feature1Title: 'Pest & Disease Detection',
-                feature1Text: 'Upload crop images to instantly identify issues and receive recommended solutions.',
-                feature2Title: 'Hyper-Local Weather Forecasts',
-                feature2Text: 'Get precise weather data and climate insights tailored to your specific farm location.',
-                feature3Title: 'Personalized Crop Management',
-                feature3Text: 'Receive expert advice on optimal sowing, irrigation, fertilization, and harvesting schedules.',
-                feature4Title: 'Market Price Analysis',
-                feature4Text: 'Stay updated with real-time market prices for your produce to maximize profits.',
-                feature5Title: 'Government Schemes & Subsidies',
-                feature5Text: 'Access comprehensive information on relevant government programs and financial aid.',
-                feature6Title: 'Multilingual Support',
-                feature6Text: 'Interact with Krishi Mitra AI in your preferred local language for seamless communication.',
-                objectivesHeading: 'Our Core Objectives & Goals',
-                objective1Title: 'Increase Crop Yields',
-                objective1Text: 'Provide data-driven insights for optimal resource allocation and improved agricultural productivity.',
-                objective2Title: 'Enhance Farmer Income',
-                objective2Text: 'Offer market intelligence and best practices to help farmers achieve higher profitability.',
-                objective3Title: 'Mitigate Agricultural Risks',
-                objective3Text: 'Early detection of pests, diseases, and adverse weather conditions to minimize losses.',
-                objective4Title: 'Promote Sustainable Practices',
-                objective4Text: 'Advocate for eco-friendly farming methods, water conservation, and soil health management.',
-                objective5Title: 'Empower with Knowledge',
-                objective5Text: 'Make complex agricultural information accessible and understandable to all farmers.',
-                objective6Title: 'Provide Instant Support',
-                objective6Text: 'Offer 24/7 automated advisory services to address farmer queries promptly.',
-                objective7Title: 'Bridge Information Gaps',
-                objective7Text: 'Connect farmers to relevant government schemes, market data, and expert networks.',
-                objective8Title: 'Foster Community Growth',
-                objective8Text: 'Create a platform for farmers to share knowledge and experiences.',
-                contactHeading: 'Ready to Transform Your Farm?',
-                contactText: 'Join the Krishi Mitra AI community today and experience the future of farming. Our intelligent system is here to support you every step of the way.',
-                getStartedButton: 'Get Started',
-                footerText: '© 2023 Krishi Mitra AI. All rights reserved.',
-                langEnglish: 'English',
-                langHindi: 'हिन्दी',
-                langKannada: 'ಕನ್ನಡ',
-                langMalayalam: 'മലയാളം'
+                featuresHeading: 'Key Features', feature1Title: 'Pest & Disease Detection', feature1Text: 'Upload crop images to instantly identify issues and receive recommended solutions.',
+                feature2Title: 'Hyper-Local Weather Forecasts', feature2Text: 'Get precise weather data and climate insights tailored to your specific farm location.',
+                feature3Title: 'Personalized Crop Management', feature3Text: 'Receive expert advice on optimal sowing, irrigation, fertilization, and harvesting schedules.',
+                feature4Title: 'Market Price Analysis', feature4Text: 'Stay updated with real-time market prices for your produce to maximize profits.',
+                feature5Title: 'Government Schemes & Subsidies', feature5Text: 'Access comprehensive information on relevant government programs and financial aid.',
+                feature6Title: 'Multilingual Support', feature6Text: 'Interact with Krishi Mitra AI in your preferred local language for seamless communication.',
+                objectivesHeading: 'Our Core Objectives & Goals', objective1Title: 'Increase Crop Yields', objective1Text: 'Provide data-driven insights for optimal resource allocation and improved agricultural productivity.',
+                objective2Title: 'Enhance Farmer Income', objective2Text: 'Offer market intelligence and best practices to help farmers achieve higher profitability.',
+                objective3Title: 'Mitigate Agricultural Risks', objective3Text: 'Early detection of pests, diseases, and adverse weather conditions to minimize losses.',
+                objective4Title: 'Promote Sustainable Practices', objective4Text: 'Advocate for eco-friendly farming methods, water conservation, and soil health management.',
+                objective5Title: 'Empower with Knowledge', objective5Text: 'Make complex agricultural information accessible and understandable to all farmers.',
+                objective6Title: 'Provide Instant Support', objective6Text: 'Offer 24/7 automated advisory services to address farmer queries promptly.',
+                objective7Title: 'Bridge Information Gaps', objective7Text: 'Connect farmers to relevant government schemes, market data, and expert networks.',
+                objective8Title: 'Foster Community Growth', objective8Text: 'Create a platform for farmers to share knowledge and experiences.',
+                contactHeading: 'Ready to Transform Your Farm?', contactText: 'Join the Krishi Mitra AI community today and experience the future of farming. Our intelligent system is here to support you every step of the way.',
+                getStartedButton: 'Get Started', footerText: '© 2023 Krishi Mitra AI. All rights reserved.',
+                langEnglish: 'English', langHindi: 'हिन्दी', langKannada: 'ಕನ್ನಡ', langMalayalam: 'മലയാളം'
             },
             hi: {
                 title: 'कृषि मित्र एआई - स्वचालित किसान सलाहकार प्रणाली',
                 headerTitle: 'कृषि मित्र एआई',
-                navAbout: 'हमारे बारे में',
-                navFeatures: 'विशेषताएं',
-                navObjectives: 'उद्देश्य',
-                navContact: 'संपर्क',
+                navAbout: 'हमारे बारे में', navFeatures: 'विशेषताएं', navObjectives: 'उद्देश्य', navContact: 'संपर्क',
+                weatherModalHeading: "आज का मौसम और सलाह",
+                selectStateLabel: "अपना राज्य चुनें:",
+                initialWeatherMessage: "सलाह देखने के लिए कृपया एक राज्य चुनें।",
+                weatherLoading: "के लिए लाइव सलाह लाई जा रही है",
+                weatherLocation: (location) => location,
+                weatherTemp: (temp) => `<strong>तापमान:</strong> ${temp}`,
+                weatherCondition: (condition) => `<strong>स्थिति:</strong> ${condition}`,
+                weatherWind: (wind) => `<strong>हवा की गति:</strong> ${wind}`,
+                weatherAdviceHeader: "कृषि सलाह:",
                 heroHeading: 'बुद्धिमान सलाह के साथ <br class="hidden sm:inline">किसानों को सशक्त बनाना',
                 heroSubheading: 'कृषि मित्र एआई किसानों को बदलती दुनिया में आगे बढ़ने में मदद करने के लिए स्वचालित, डेटा-संचालित अंतर्दृष्टि और व्यक्तिगत मार्गदर्शन प्रदान करता है।',
-                chatButton: 'अभी चैट करना शुरू करें',
-                learnMoreButton: 'हमारे बारे में',
-                aboutHeading: 'कृषि मित्र एआई के बारे में',
+                movingLine: 'एआई द्वारा संचालित कृषि-मित्र में आपका स्वागत है',
+                chatButton: 'अभी चैट करना शुरू करें', learnMoreButton: 'हमारे बारे में', aboutHeading: 'कृषि मित्र एआई के बारे में',
                 aboutText: 'कृषि मित्र एआई कृत्रिम बुद्धिमत्ता के माध्यम से पारंपरिक खेती के तरीकों को बदलने के लिए समर्पित एक अभिनव मंच है। हमारा मानना है कि हर किसान, चाहे उसका पैमाना या स्थान कुछ भी हो, उसे अत्याधुनिक जानकारी और सहायता तक पहुंच का अधिकार है। हमारा सिस्टम मौसम, मिट्टी, फसल स्वास्थ्य और बाजार के रुझानों पर वास्तविक समय के डेटा का विश्लेषण करता है ताकि कार्रवाई योग्य सलाह दी जा सके, जिससे किसानों को सूचित निर्णय लेने और बेहतर पैदावार हासिल करने में मदद मिल सके।',
-                featuresHeading: 'मुख्य विशेषताएं',
-                feature1Title: 'कीट और रोग का पता लगाना',
-                feature1Text: 'मुद्दों को तुरंत पहचानने और अनुशंसित समाधान प्राप्त करने के लिए फसल की छवियां अपलोड करें।',
-                feature2Title: 'हाइपर-लोकल मौसम पूर्वानुमान',
-                feature2Text: 'अपने विशिष्ट कृषि स्थान के अनुरूप सटीक मौसम डेटा और जलवायु अंतर्दृष्टि प्राप्त करें।',
-                feature3Title: 'व्यक्तिगत फसल प्रबंधन',
-                feature3Text: 'इष्टतम बुवाई, सिंचाई, निषेचन और कटाई के कार्यक्रम पर विशेषज्ञ सलाह प्राप्त करें।',
-                feature4Title: 'बाजार मूल्य विश्लेषण',
-                feature4Text: 'मुनाफे को अधिकतम करने के लिए अपनी उपज के लिए वास्तविक समय के बाजार मूल्यों से अपडेट रहें।',
-                feature5Title: 'सरकारी योजनाएं और सब्सिडी',
-                feature5Text: 'प्रासंगिक सरकारी कार्यक्रमों और वित्तीय सहायता पर व्यापक जानकारी तक पहुंच प्राप्त करें।',
-                feature6Title: 'बहुभाषी सहायता',
-                feature6Text: 'निर्बाध संचार के लिए अपनी पसंदीदा स्थानीय भाषा में कृषि मित्र एआई के साथ बातचीत करें।',
-                objectivesHeading: 'हमारे मुख्य उद्देश्य और लक्ष्य',
-                objective1Title: 'फसल की पैदावार बढ़ाना',
-                objective1Text: 'इष्टतम संसाधन आवंटन और बेहतर कृषि उत्पादकता के लिए डेटा-संचालित अंतर्दृष्टि प्रदान करें।',
-                objective2Title: 'किसान की आय बढ़ाना',
-                objective2Text: 'किसानों को उच्च लाभप्रदता हासिल करने में मदद करने के लिए बाजार की खुफिया जानकारी और सर्वोत्तम अभ्यास प्रदान करें।',
-                objective3Title: 'कृषि जोखिमों को कम करना',
-                objective3Text: 'नुकसान को कम करने के लिए कीटों, रोगों और प्रतिकूल मौसम की स्थिति का शीघ्र पता लगाना।',
-                objective4Title: 'टिकाऊ प्रथाओं को बढ़ावा देना',
-                objective4Text: 'पर्यावरण के अनुकूल खेती के तरीकों, जल संरक्षण और मिट्टी के स्वास्थ्य प्रबंधन की वकालत करें।',
-                objective5Title: 'ज्ञान के साथ सशक्त बनाना',
-                objective5Text: 'सभी किसानों के लिए जटिल कृषि जानकारी को सुलभ और समझने योग्य बनाएं।',
-                objective6Title: 'तत्काल सहायता प्रदान करना',
-                objective6Text: 'किसानों के प्रश्नों को तुरंत संबोधित करने के लिए 24/7 स्वचालित सलाहकार सेवाएं प्रदान करें।',
-                objective7Title: 'सूचना अंतराल को भरना',
-                objective7Text: 'किसानों को प्रासंगिक सरकारी योजनाओं, बाजार डेटा और विशेषज्ञ नेटवर्क से जोड़ें।',
-                objective8Title: 'सामुदायिक विकास को बढ़ावा देना',
-                objective8Text: 'किसानों के लिए ज्ञान और अनुभव साझा करने के लिए एक मंच बनाएं।',
-                contactHeading: 'अपने खेत को बदलने के लिए तैयार हैं?',
-                contactText: 'आज ही कृषि मित्र एआई समुदाय से जुड़ें और खेती के भविष्य का अनुभव करें। हमारा बुद्धिमान सिस्टम हर कदम पर आपका साथ देने के लिए है।',
-                getStartedButton: 'शुरू करें',
-                footerText: '© 2023 कृषि मित्र एआई। सर्वाधिकार सुरक्षित।',
-                langEnglish: 'English',
-                langHindi: 'हिन्दी',
-                langKannada: 'ಕನ್ನಡ',
-                langMalayalam: 'മലയാളം'
+                featuresHeading: 'मुख्य विशेषताएं', feature1Title: 'कीट और रोग का पता लगाना', feature1Text: 'मुद्दों को तुरंत पहचानने और अनुशंसित समाधान प्राप्त करने के लिए फसल की छवियां अपलोड करें।',
+                feature2Title: 'हाइपर-लोकल मौसम पूर्वानुमान', feature2Text: 'अपने विशिष्ट कृषि स्थान के अनुरूप सटीक मौसम डेटा और जलवायु अंतर्दृष्टि प्राप्त करें।',
+                feature3Title: 'व्यक्तिगत फसल प्रबंधन', feature3Text: 'इष्टतम बुवाई, सिंचाई, निषेचन और कटाई के कार्यक्रम पर विशेषज्ञ सलाह प्राप्त करें।',
+                feature4Title: 'बाजार मूल्य विश्लेषण', feature4Text: 'मुनाफे को अधिकतम करने के लिए अपनी उपज के लिए वास्तविक समय के बाजार मूल्यों से अपडेट रहें।',
+                feature5Title: 'सरकारी योजनाएं और सब्सिडी', feature5Text: 'प्रासंगिक सरकारी कार्यक्रमों और वित्तीय सहायता पर व्यापक जानकारी तक पहुंच प्राप्त करें।',
+                feature6Title: 'बहुभाषी सहायता', feature6Text: 'निर्बाध संचार के लिए अपनी पसंदीदा स्थानीय भाषा में कृषि मित्र एआई के साथ बातचीत करें।',
+                objectivesHeading: 'हमारे मुख्य उद्देश्य और लक्ष्य', objective1Title: 'फसल की पैदावार बढ़ाना', objective1Text: 'इष्टतम संसाधन आवंटन और बेहतर कृषि उत्पादकता के लिए डेटा-संचालित अंतर्दृष्टि प्रदान करें।',
+                objective2Title: 'किसान की आय बढ़ाना', objective2Text: 'किसानों को उच्च लाभप्रदता हासिल करने में मदद करने के लिए बाजार की खुफिया जानकारी और सर्वोत्तम अभ्यास प्रदान करें।',
+                objective3Title: 'कृषि जोखिमों को कम करना', objective3Text: 'नुकसान को कम करने के लिए कीटों, रोगों और प्रतिकूल मौसम की स्थिति का शीघ्र पता लगाना।',
+                objective4Title: 'टिकाऊ प्रथाओं को बढ़ावा देना', objective4Text: 'पर्यावरण के अनुकूल खेती के तरीकों, जल संरक्षण और मिट्टी के स्वास्थ्य प्रबंधन की वकालत करें।',
+                objective5Title: 'ज्ञान के साथ सशक्त बनाना', objective5Text: 'सभी किसानों के लिए जटिल कृषि जानकारी को सुलभ और समझने योग्य बनाएं।',
+                objective6Title: 'तत्काल सहायता प्रदान करना', objective6Text: 'किसानों के प्रश्नों को तुरंत संबोधित करने के लिए 24/7 स्वचालित सलाहकार सेवाएं प्रदान करें।',
+                objective7Title: 'सूचना अंतराल को भरना', objective7Text: 'किसानों को प्रासंगिक सरकारी योजनाओं, बाजार डेटा और विशेषज्ञ नेटवर्क से जोड़ें।',
+                objective8Title: 'सामुदायिक विकास को बढ़ावा देना', objective8Text: 'किसानों के लिए ज्ञान और अनुभव साझा करने के लिए एक मंच बनाएं।',
+                contactHeading: 'अपने खेत को बदलने के लिए तैयार हैं?', contactText: 'आज ही कृषि मित्र एआई समुदाय से जुड़ें और खेती के भविष्य का अनुभव करें। हमारा बुद्धिमान सिस्टम हर कदम पर आपका साथ देने के लिए है।',
+                getStartedButton: 'शुरू करें', footerText: '© 2023 कृषि मित्र एआई। सर्वाधिकार सुरक्षित।',
+                langEnglish: 'English', langHindi: 'हिन्दी', langKannada: 'ಕನ್ನಡ', langMalayalam: 'മലയാളം'
             },
             kn: {
                 title: 'ಕೃಷಿ ಮಿತ್ರ AI - ಸ್ವಯಂಚಾಲಿತ ರೈತ ಸಲಹಾ ವ್ಯವಸ್ಥೆ',
                 headerTitle: 'ಕೃಷಿ ಮಿತ್ರ AI',
-                navAbout: 'ನಮ್ಮ ಬಗ್ಗೆ',
-                navFeatures: 'ವೈಶಿಷ್ಟ್ಯಗಳು',
-                navObjectives: 'ಉದ್ದೇಶಗಳು',
-                navContact: 'ಸಂಪರ್ಕ',
+                navAbout: 'ನಮ್ಮ ಬಗ್ಗೆ', navFeatures: 'ವೈಶಿಷ್ಟ್ಯಗಳು', navObjectives: 'ಉದ್ದೇಶಗಳು', navContact: 'ಸಂಪರ್ಕ',
+                weatherModalHeading: 'ಇಂದಿನ ಹವಾಮಾನ ಮತ್ತು ಸಲಹೆ',
+                selectStateLabel: "ನಿಮ್ಮ ರಾಜ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+                initialWeatherMessage: "ಸಲಹೆಯನ್ನು ವೀಕ್ಷಿಸಲು ದಯವಿಟ್ಟು ರಾಜ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+                weatherLoading: "ಗಾಗಿ ಲೈವ್ ಸಲಹೆಯನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ",
+                weatherLocation: (location) => location,
+                weatherTemp: (temp) => `<strong>ತಾಪಮಾನ:</strong> ${temp}`,
+                weatherCondition: (condition) => `<strong>ಸ್ಥಿತಿ:</strong> ${condition}`,
+                weatherWind: (wind) => `<strong>ಗಾಳಿಯ ವೇಗ:</strong> ${wind}`,
+                weatherAdviceHeader: "ಕೃಷಿ ಸಲಹೆ:",
                 heroHeading: 'ಬುದ್ಧಿವಂತ ಸಲಹೆಯೊಂದಿಗೆ <br class="hidden sm:inline">ರೈತರನ್ನು ಸಬಲಗೊಳಿಸುವುದು',
                 heroSubheading: 'ಕೃಷಿ ಮಿತ್ರ AI ಬದಲಾಗುತ್ತಿರುವ ಜಗತ್ತಿನಲ್ಲಿ ರೈತರಿಗೆ ಬೆಳೆಯಲು ಸಹಾಯ ಮಾಡಲು ಸ್ವಯಂಚಾಲಿತ, ದತ್ತಾಂಶ-ಆಧಾರಿತ ಒಳನೋಟಗಳು ಮತ್ತು ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಮಾರ್ಗದರ್ಶನವನ್ನು ಒದಗಿಸುತ್ತದೆ.',
-                chatButton: 'ಈಗ ಚಾಟ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ',
-                learnMoreButton: 'ನಮ್ಮ ಬಗ್ಗೆ',
-                aboutHeading: 'ಕೃಷಿ ಮಿತ್ರ AI ಬಗ್ಗೆ',
+                movingLine: 'AI ಮೂಲಕ ನಡೆಸಲ್ಪಡುವ ಕೃಷಿ-ಮಿತ್ರಗೆ ಸ್ವಾಗತ',
+                chatButton: 'ಈಗ ಚಾಟ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ', learnMoreButton: 'ನಮ್ಮ ಬಗ್ಗೆ', aboutHeading: 'ಕೃಷಿ ಮಿತ್ರ AI ಬಗ್ಗೆ',
                 aboutText: 'ಕೃಷಿ ಮಿತ್ರ AI ಕೃತಕ ಬುದ್ಧಿಮತ್ತೆಯ ಮೂಲಕ ಸಾಂಪ್ರದಾಯಿಕ ಕೃಷಿ ಪದ್ಧತಿಗಳನ್ನು ಪರಿವರ್ತಿಸಲು ಸಮರ್ಪಿತವಾಗಿರುವ ಒಂದು ನವೀನ ವೇದಿಕೆಯಾಗಿದೆ. ಪ್ರತಿ ರೈತರು, ಅವರ ಗಾತ್ರ ಅಥವಾ ಸ್ಥಳವನ್ನು ಲೆಕ್ಕಿಸದೆ, ಅತ್ಯಾಧುನಿಕ ಮಾಹಿತಿ ಮತ್ತು ಬೆಂಬಲವನ್ನು ಪಡೆಯಲು ಅರ್ಹರು ಎಂದು ನಾವು ನಂಬುತ್ತೇವೆ. ನಮ್ಮ ವ್ಯವಸ್ಥೆಯು ಹವಾಮಾನ, ಮಣ್ಣು, ಬೆಳೆ ಆರೋಗ್ಯ ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಪ್ರವೃತ್ತಿಗಳ ಬಗ್ಗೆ ನೈಜ-ಸಮಯದ ಡೇಟಾವನ್ನು ವಿಶ್ಲೇಷಿಸಿ, ರೈತರಿಗೆ ತಿಳುವಳಿಕೆಯುಳ್ಳ ನಿರ್ಧಾರಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲು ಮತ್ತು ಉತ್ತಮ ಇಳುವರಿಯನ್ನು ಸಾಧಿಸಲು ಸಹಾಯ ಮಾಡುವ ಕಾರ್ಯಸಾಧ್ಯವಾದ ಸಲಹೆಯನ್ನು ನೀಡುತ್ತದೆ.',
-                featuresHeading: 'ಪ್ರಮುಖ ವೈಶಿಷ್ಟ್ಯಗಳು',
-                feature1Title: 'ಕೀಟ ಮತ್ತು ರೋಗ ಪತ್ತೆ',
-                feature1Text: 'ಸಮಸ್ಯೆಗಳನ್ನು ತಕ್ಷಣವೇ ಗುರುತಿಸಲು ಮತ್ತು ಶಿಫಾರಸು ಮಾಡಿದ ಪರಿಹಾರಗಳನ್ನು ಪಡೆಯಲು ಬೆಳೆ ಚಿತ್ರಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.',
-                feature2Title: 'ಹೈಪರ್-ಲೋಕಲ್ ಹವಾಮಾನ ಮುನ್ಸೂಚನೆಗಳು',
-                feature2Text: 'ನಿಮ್ಮ ನಿರ್ದಿಷ್ಟ ಕೃಷಿ ಸ್ಥಳಕ್ಕೆ ಅನುಗುಣವಾಗಿ ನಿಖರವಾದ ಹವಾಮಾನ ಡೇಟಾ ಮತ್ತು ಹವಾಮಾನ ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಿರಿ.',
-                feature3Title: 'ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಬೆಳೆ ನಿರ್ವಹಣೆ',
-                feature3Text: 'ಸೂಕ್ತವಾದ ಬಿತ್ತನೆ, ನೀರಾವರಿ, ಗೊಬ್ಬರ ಹಾಕುವಿಕೆ ಮತ್ತು ಕಟಾವು ವೇಳಾಪಟ್ಟಿಗಳ ಕುರಿತು ತಜ್ಞರ ಸಲಹೆಯನ್ನು ಪಡೆಯಿರಿ.',
-                feature4Title: 'ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ವಿಶ್ಲೇಷಣೆ',
-                feature4Text: 'ಲಾಭವನ್ನು ಗರಿಷ್ಠಗೊಳಿಸಲು ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳ ನೈಜ-ಸಮಯದ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳೊಂದಿಗೆ ನವೀಕೃತವಾಗಿರಿ.',
-                feature5Title: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು ಮತ್ತು ಸಬ್ಸಿಡಿಗಳು',
-                feature5Text: 'ಸಂಬಂಧಿತ ಸರ್ಕಾರಿ ಕಾರ್ಯಕ್ರಮಗಳು ಮತ್ತು ಆರ್ಥಿಕ ಸಹಾಯದ ಬಗ್ಗೆ ಸಮಗ್ರ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಿ.',
-                feature6Title: 'ಬಹುಭಾಷಾ ಬೆಂಬಲ',
-                feature6Text: 'ತಡೆರಹಿತ ಸಂವಹನಕ್ಕಾಗಿ ನಿಮ್ಮ ಆದ್ಯತೆಯ ಸ್ಥಳೀಯ ಭಾಷೆಯಲ್ಲಿ ಕೃಷಿ ಮಿತ್ರ AI ನೊಂದಿಗೆ ಸಂವಹಿಸಿ.',
-                objectivesHeading: 'ನಮ್ಮ ಪ್ರಮುಖ ಉದ್ದೇಶಗಳು ಮತ್ತು ಗುರಿಗಳು',
-                objective1Title: 'ಬೆಳೆ ಇಳುವರಿ ಹೆಚ್ಚಿಸುವುದು',
-                objective1Text: 'ಸೂಕ್ತ ಸಂಪನ್ಮೂಲ ಹಂಚಿಕೆ ಮತ್ತು ಸುಧಾರಿತ ಕೃಷಿ ಉತ್ಪಾದಕತೆಗಾಗಿ ದತ್ತಾಂಶ-ಆಧಾರಿತ ಒಳನೋಟಗಳನ್ನು ಒದಗಿಸುವುದು.',
-                objective2Title: 'ರೈತರ ಆದಾಯ ಹೆಚ್ಚಿಸುವುದು',
-                objective2Text: 'ರೈತರಿಗೆ ಹೆಚ್ಚಿನ ಲಾಭವನ್ನು ಸಾಧಿಸಲು ಸಹಾಯ ಮಾಡಲು ಮಾರುಕಟ್ಟೆ ಜಾಣ್ಮೆ ಮತ್ತು ಉತ್ತಮ ಪದ್ಧತಿಗಳನ್ನು ನೀಡುವುದು.',
-                objective3Title: 'ಕೃಷಿ ಅಪಾಯಗಳನ್ನು ಕಡಿಮೆ ಮಾಡುವುದು',
-                objective3Text: 'ನಷ್ಟವನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಕೀಟಗಳು, ರೋಗಗಳು ಮತ್ತು ಪ್ರತಿಕೂಲ ಹವಾಮಾನ ಪರಿಸ್ಥಿತಿಗಳ ಆರಂಭಿಕ ಪತ್ತೆ.',
-                objective4Title: 'ಸುಸ್ಥಿರ ಪದ್ಧತಿಗಳನ್ನು ಉತ್ತೇಜಿಸುವುದು',
-                objective4Text: 'ಪರಿಸರ ಸ್ನೇಹಿ ಕೃಷಿ ಪದ್ಧತಿಗಳು, ಜಲ ಸಂರಕ್ಷಣೆ ಮತ್ತು ಮಣ್ಣಿನ ಆರೋಗ್ಯ ನಿರ್ವಹಣೆಗೆ ಸಲಹೆ ನೀಡುವುದು.',
-                objective5Title: 'ಜ್ಞಾನದೊಂದಿಗೆ ಸಬಲಗೊಳಿಸುವುದು',
-                objective5Text: 'ಎಲ್ಲಾ ರೈತರಿಗೆ ಸಂಕೀರ್ಣ ಕೃಷಿ ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಪ್ರವೇಶಿಸಲು ಮತ್ತು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಸುವುದು.',
-                objective6Title: 'ತಕ್ಷಣದ ಬೆಂಬಲ ನೀಡುವುದು',
-                objective6Text: 'ರೈತರ ಪ್ರಶ್ನೆಗಳನ್ನು ತಕ್ಷಣವೇ ಪರಿಹರಿಸಲು 24/7 ಸ್ವಯಂಚಾಲಿತ ಸಲಹಾ ಸೇವೆಗಳನ್ನು ನೀಡುವುದು.',
-                objective7Title: 'ಮಾಹಿತಿ ಅಂತರವನ್ನು ಕಡಿಮೆ ಮಾಡುವುದು',
-                objective7Text: 'ಸಂಬಂಧಿತ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು, ಮಾರುಕಟ್ಟೆ ಡೇಟಾ ಮತ್ತು ತಜ್ಞರ ಜಾಲಗಳಿಗೆ ರೈತರನ್ನು ಸಂಪರ್ಕಿಸುವುದು.',
-                objective8Title: 'ಸಮುದಾಯದ ಬೆಳವಣಿಗೆಯನ್ನು ಪೋಷಿಸುವುದು',
-                objective8Text: 'ರೈತರು ಜ್ಞಾನ ಮತ್ತು ಅನುಭವಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಒಂದು ವೇದಿಕೆಯನ್ನು ರಚಿಸುವುದು.',
+                featuresHeading: 'ಪ್ರಮುಖ ವೈಶಿಷ್ಟ್ಯಗಳು', feature1Title: 'ಕೀಟ ಮತ್ತು ರೋಗ ಪತ್ತೆ', feature1Text: 'ಸಮಸ್ಯೆಗಳನ್ನು ತಕ್ಷಣವೇ ಗುರುತಿಸಲು ಮತ್ತು ಶಿಫಾರಸು ಮಾಡಿದ ಪರಿಹಾರಗಳನ್ನು ಪಡೆಯಲು ಬೆಳೆ ಚಿತ್ರಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.',
+                feature2Title: 'ಹೈಪರ್-ಲೋಕಲ್ ಹವಾಮಾನ ಮುನ್ಸೂಚನೆಗಳು', feature2Text: 'ನಿಮ್ಮ ನಿರ್ದಿಷ್ಟ ಕೃಷಿ ಸ್ಥಳಕ್ಕೆ ಅನುಗುಣವಾಗಿ ನಿಖರವಾದ ಹವಾಮಾನ ಡೇಟಾ ಮತ್ತು ಹವಾಮಾನ ಒಳನೋಟಗಳನ್ನು ಪಡೆಯಿರಿ.',
+                feature3Title: 'ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಬೆಳೆ ನಿರ್ವಹಣೆ', feature3Text: 'ಸೂಕ್ತವಾದ ಬಿತ್ತನೆ, ನೀರಾವರಿ, ಗೊಬ್ಬರ ಹಾಕುವಿಕೆ ಮತ್ತು ಕಟಾವು ವೇಳಾಪಟ್ಟಿಗಳ ಕುರಿತು ತಜ್ಞರ ಸಲಹೆಯನ್ನು ಪಡೆಯಿರಿ.',
+                feature4Title: 'ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ವಿಶ್ಲೇಷಣೆ', feature4Text: 'ಲಾಭವನ್ನು ಗರಿಷ್ಠಗೊಳಿಸಲು ನಿಮ್ಮ ಉತ್ಪನ್ನಗಳ ನೈಜ-ಸಮಯದ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳೊಂದಿಗೆ ನವೀಕೃತವಾಗಿರಿ.',
+                feature5Title: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು ಮತ್ತು ಸಬ್ಸಿಡಿಗಳು', feature5Text: 'ಸಂಬಂಧಿತ ಸರ್ಕಾರಿ ಕಾರ್ಯಕ್ರಮಗಳು ಮತ್ತು ಆರ್ಥಿಕ ಸಹಾಯದ ಬಗ್ಗೆ ಸಮಗ್ರ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಿ.',
+                feature6Title: 'ಬಹುಭಾಷಾ ಬೆಂಬಲ', feature6Text: 'ತಡೆರಹಿತ ಸಂವಹನಕ್ಕಾಗಿ ನಿಮ್ಮ ಆದ್ಯತೆಯ ಸ್ಥಳೀಯ ಭಾಷೆಯಲ್ಲಿ ಕೃಷಿ ಮಿತ್ರ AI ನೊಂದಿಗೆ ಸಂವಹಿಸಿ.',
+                objectivesHeading: 'ನಮ್ಮ ಪ್ರಮುಖ ಉದ್ದೇಶಗಳು ಮತ್ತು ಗುರಿಗಳು', objective1Title: 'ಬೆಳೆ ಇಳುವರಿ ಹೆಚ್ಚಿಸುವುದು', objective1Text: 'ಸೂಕ್ತ ಸಂಪನ್ಮೂಲ ಹಂಚಿಕೆ ಮತ್ತು ಸುಧಾರಿತ ಕೃಷಿ ಉತ್ಪಾದಕತೆಗಾಗಿ ದತ್ತಾಂಶ-ಆಧಾರಿತ ಒಳನೋಟಗಳನ್ನು ಒದಗಿಸುವುದು.',
+                objective2Title: 'ರೈತರ ಆದಾಯ ಹೆಚ್ಚಿಸುವುದು', objective2Text: 'ರೈತರಿಗೆ ಹೆಚ್ಚಿನ ಲಾಭವನ್ನು ಸಾಧಿಸಲು ಸಹಾಯ ಮಾಡಲು ಮಾರುಕಟ್ಟೆ ಜಾಣ್ಮೆ ಮತ್ತು ಉತ್ತಮ ಪದ್ಧತಿಗಳನ್ನು ನೀಡುವುದು.',
+                objective3Title: 'ಕೃಷಿ ಅಪಾಯಗಳನ್ನು ಕಡಿಮೆ ಮಾಡುವುದು', objective3Text: 'ನಷ್ಟವನ್ನು ಕಡಿಮೆ ಮಾಡಲು ಕೀಟಗಳು, ರೋಗಗಳು ಮತ್ತು ಪ್ರತಿಕೂಲ ಹವಾಮಾನ ಪರಿಸ್ಥಿತಿಗಳ ಆರಂಭಿಕ ಪತ್ತೆ.',
+                objective4Title: 'ಸುಸ್ಥಿರ ಪದ್ಧತಿಗಳನ್ನು ಉತ್ತೇಜಿಸುವುದು', objective4Text: 'ಪರಿಸರ ಸ್ನೇಹಿ ಕೃಷಿ ಪದ್ಧತಿಗಳು, ಜಲ ಸಂರಕ್ಷಣೆ ಮತ್ತು ಮಣ್ಣಿನ ಆರೋಗ್ಯ ನಿರ್ವಹಣೆಗೆ ಸಲಹೆ ನೀಡುವುದು.',
+                objective5Title: 'ಜ್ಞಾನದೊಂದಿಗೆ ಸಬಲಗೊಳಿಸುವುದು', objective5Text: 'ಎಲ್ಲಾ ರೈತರಿಗೆ ಸಂಕೀರ್ಣ ಕೃಷಿ ಮಾಹಿತಿಯನ್ನು ಸುಲಭವಾಗಿ ಪ್ರವೇಶಿಸಲು ಮತ್ತು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಿಸುವುದು.',
+                objective6Title: 'ತಕ್ಷಣದ ಬೆಂಬಲ ನೀಡುವುದು', objective6Text: 'ರೈತರ ಪ್ರಶ್ನೆಗಳನ್ನು ತಕ್ಷಣವೇ ಪರಿಹರಿಸಲು 24/7 ಸ್ವಯಂಚಾಲಿತ ಸಲಹಾ ಸೇವೆಗಳನ್ನು ನೀಡುವುದು.',
+                objective7Title: 'ಮಾಹಿತಿ ಅಂತರವನ್ನು ಕಡಿಮೆ ಮಾಡುವುದು', objective7Text: 'ಸಂಬಂಧಿತ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು, ಮಾರುಕಟ್ಟೆ ಡೇಟಾ ಮತ್ತು ತಜ್ಞರ ಜಾಲಗಳಿಗೆ ರೈತರನ್ನು ಸಂಪರ್ಕಿಸುವುದು.',
+                objective8Title: 'ಸಮುದಾಯದ ಬೆಳವಣಿಗೆಯನ್ನು ಪೋಷಿಸುವುದು', objective8Text: 'ರೈತರು ಜ್ಞಾನ ಮತ್ತು ಅನುಭವಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಒಂದು ವೇದಿಕೆಯನ್ನು ರಚಿಸುವುದು.',
                 contactHeading: 'ನಿಮ್ಮ ಕೃಷಿಯನ್ನು ಪರಿವರ್ತಿಸಲು ಸಿದ್ಧರಿದ್ದೀರಾ?',
                 contactText: 'ಇಂದು ಕೃಷಿ ಮಿತ್ರ AI ಸಮುದಾಯವನ್ನು ಸೇರಿ ಮತ್ತು ಕೃಷಿಯ ಭವಿಷ್ಯವನ್ನು ಅನುಭವಿಸಿ. ನಮ್ಮ ಬುದ್ಧಿವಂತ ವ್ಯವಸ್ಥೆಯು ಪ್ರತಿ ಹೆಜ್ಜೆಯಲ್ಲೂ ನಿಮ್ಮನ್ನು ಬೆಂಬಲಿಸಲು ಇಲ್ಲಿದೆ.',
-                getStartedButton: 'ಪ್ರಾರಂಭಿಸಿ',
-                footerText: '© 2023 ಕೃಷಿ ಮಿತ್ರ AI. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.',
-                langEnglish: 'English',
-                langHindi: 'हिन्दी',
-                langKannada: 'ಕನ್ನಡ',
-                langMalayalam: 'മലയാളಂ'
+                getStartedButton: 'ಪ್ರಾರಂಭಿಸಿ', footerText: '© 2023 ಕೃಷಿ ಮಿತ್ರ AI. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.',
+                langEnglish: 'English', langHindi: 'हिन्दी', langKannada: 'ಕನ್ನಡ', langMalayalam: 'മലയാളಂ'
             },
             ml: {
                 title: 'കൃഷി മിത്ര AI - ഓട്ടോമേറ്റഡ് കർഷക ഉപദേശക സിസ്റ്റം',
                 headerTitle: 'കൃഷി മിത്ര AI',
-                navAbout: 'ഞങ്ങളെക്കുറിച്ച്',
-                navFeatures: 'സവിശേഷതകൾ',
-                navObjectives: 'ലക്ഷ്യങ്ങൾ',
-                navContact: 'ബന്ധപ്പെടുക',
+                navAbout: 'ഞങ്ങളെക്കുറിച്ച്', navFeatures: 'സവിശേഷതകൾ', navObjectives: 'ലക്ഷ്യങ്ങൾ', navContact: 'ബന്ധപ്പെടുക',
+                weatherModalHeading: 'ഇന്നത്തെ കാലാവസ്ഥയും ഉപദേശവും',
+                selectStateLabel: "നിങ്ങളുടെ സംസ്ഥാനം തിരഞ്ഞെടുക്കുക:",
+                initialWeatherMessage: "ഉപദേശം കാണുന്നതിന് ദയവായി ഒരു സംസ്ഥാനം തിരഞ്ഞെടുക്കുക.",
+                weatherLoading: "എന്ന സ്ഥലത്തിനായി തത്സമയ ഉപദേശം എടുക്കുന്നു",
+                weatherLocation: (location) => location,
+                weatherTemp: (temp) => `<strong>താപനില:</strong> ${temp}`,
+                weatherCondition: (condition) => `<strong>അവസ്ഥ:</strong> ${condition}`,
+                weatherWind: (wind) => `<strong>കാറ്റിന്റെ വേഗത:</strong> ${wind}`,
+                weatherAdviceHeader: "കാർഷിക ഉപദേശം:",
                 heroHeading: 'ബുദ്ധിപരമായ ഉപദേശങ്ങൾ നൽകി <br class="hidden sm:inline">കർഷകരെ ശാക്തീകരിക്കുക',
                 heroSubheading: 'മാറിക്കൊണ്ടിരിക്കുന്ന ലോകത്ത് കർഷകർക്ക് വളരാൻ സഹായിക്കുന്നതിന് ഓട്ടോമേറ്റഡ്, ഡാറ്റാധിഷ്ഠിത ഉൾക്കാഴ്ചകളും വ്യക്തിഗത മാർഗ്ഗനിർദ്ദേശങ്ങളും കൃഷി മിത്ര AI നൽകുന്നു.',
-                chatButton: 'ഇപ്പോൾ ചാറ്റ് ചെയ്യാൻ തുടങ്ങുക',
-                learnMoreButton: 'ഞങ്ങളെക്കുറിച്ച്',
-                aboutHeading: 'കൃഷി മിത്ര AI നെക്കുറിച്ച്',
+                movingLine: 'AI ശക്തിപ്പെടുത്തുന്ന കൃഷി-മിത്രയിലേക്ക് സ്വാഗതം',
+                chatButton: 'ഇപ്പോൾ ചാറ്റ് ചെയ്യാൻ തുടങ്ങുക', learnMoreButton: 'ഞങ്ങളെക്കുറിച്ച്', aboutHeading: 'കൃഷി മിത്ര AI നെക്കുറിച്ച്',
                 aboutText: 'കൃത്രിമ ബുദ്ധിയിലൂടെ പരമ്പരാഗത കാർഷിക രീതികളെ പരിവർത്തനം ചെയ്യാൻ സമർപ്പിതമായ ഒരു നൂതന പ്ലാറ്റ്‌ഫോമാണ് കൃഷി മിത്ര AI. എല്ലാ കർഷകർക്കും, അവരുടെ വലിപ്പം പരിഗണിക്കാതെ, അത്യാധുനിക വിവരങ്ങളും പിന്തുണയും ലഭിക്കാൻ അർഹതയുണ്ടെന്ന് ഞങ്ങൾ വിശ്വസിക്കുന്നു. തീരുമാനമെടുക്കാനും മികച്ച വിളവ് നേടാനും കർഷകരെ സഹായിക്കുന്നതിന് കാലാവസ്ഥ, മണ്ണ്, വിള ആരോഗ്യം, വിപണിയിലെ ട്രെൻഡുകൾ എന്നിവയെക്കുറിച്ചുള്ള തത്സമയ ഡാറ്റ ഞങ്ങളുടെ സിസ്റ്റം വിശകലനം ചെയ്യുന്നു.',
-                featuresHeading: 'പ്രധാന സവിശേഷതകൾ',
-                feature1Title: 'കീടരോഗ കണ്ടെത്തൽ',
-                feature1Text: 'വിളകളുടെ ചിത്രങ്ങൾ അപ്‌ലോഡ് ചെയ്താൽ പ്രശ്നങ്ങൾ തൽക്ഷണം തിരിച്ചറിയാനും പരിഹാരങ്ങൾ നേടാനും കഴിയും.',
-                feature2Title: 'ഹൈപ്പർ-ലോക്കൽ കാലാവസ്ഥാ പ്രവചനങ്ങൾ',
-                feature2Text: 'നിങ്ങളുടെ കൃത്യമായ ഫാം ലൊക്കേഷന് അനുയോജ്യമായ കാലാവസ്ഥാ വിവരങ്ങളും കാലാവസ്ഥാ ഉൾക്കാഴ്ചകളും നേടുക.',
-                feature3Title: 'വിള പരിപാലനം',
-                feature3Text: 'വിത്തുകൾ വിതയ്ക്കൽ, ജലസേചനം, വളമിടൽ, വിളവെടുപ്പ് എന്നിവയ്ക്കുള്ള വിദഗ്ദ്ധ ഉപദേശങ്ങൾ നേടുക.',
-                feature4Title: 'വിപണി വില വിശകലനം',
-                feature4Text: 'ലാഭം വർദ്ധിപ്പിക്കുന്നതിന് നിങ്ങളുടെ ഉൽപ്പന്നങ്ങളുടെ തത്സമയ വിപണി വിലയെക്കുറിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുക.',
-                feature5Title: 'സർക്കാർ പദ്ധതികളും സബ്സിഡികളും',
-                feature5Text: 'പ്രസക്തമായ സർക്കാർ പദ്ധതികളെയും സാമ്പത്തിക സഹായത്തെയും കുറിച്ചുള്ള വിവരങ്ങൾ നേടുക.',
-                feature6Title: 'ബഹുഭാഷാ പിന്തുണ',
-                feature6Text: 'തടസ്സങ്ങളില്ലാത്ത ആശയവിനിമയത്തിനായി നിങ്ങൾക്ക് ഇഷ്ടപ്പെട്ട പ്രാദേശിക ഭാഷയിൽ കൃഷി മിത്ര AI-യുമായി സംവദിക്കാം.',
-                objectivesHeading: 'ഞങ്ങളുടെ പ്രധാന ലക്ഷ്യങ്ങൾ',
-                objective1Title: 'വിളവ് വർദ്ധിപ്പിക്കുക',
-                objective1Text: 'വിഭവങ്ങളുടെ ഏറ്റവും മികച്ച വിനിയോഗത്തിനും മെച്ചപ്പെട്ട കാർഷിക ഉത്പാദനക്ഷമതയ്ക്കും വേണ്ടി ഡാറ്റാധിഷ്ഠിത ഉൾക്കാഴ്ചകൾ നൽകുക.',
-                objective2Title: 'കർഷകരുടെ വരുമാനം വർദ്ധിപ്പിക്കുക',
-                objective2Text: 'കർഷകർക്ക് ഉയർന്ന ലാഭം നേടുന്നതിന് വിപണി വിവരങ്ങളും മികച്ച രീതികളും നൽകുക.',
-                objective3Title: 'കാർഷിക അപകടസാധ്യതകൾ കുറയ്ക്കുക',
-                objective3Text: 'നഷ്ടം കുറയ്ക്കുന്നതിന് കീടങ്ങൾ, രോഗങ്ങൾ, പ്രതികൂല കാലാവസ്ഥാ സാഹചര്യങ്ങൾ എന്നിവ നേരത്തെ കണ്ടെത്തുക.',
-                objective4Title: 'സുസ്ഥിര സമ്പ്രദായങ്ങൾ പ്രോത്സാഹിപ്പിക്കുക',
-                objective4Text: 'പരിസ്ഥിതി സൗഹൃദ കൃഷിരീതികൾ, ജലസംരക്ഷണം, മണ്ണിന്റെ ആരോഗ്യ പരിപാലനം എന്നിവയ്ക്ക് വേണ്ടി പ്രവർത്തിക്കുക.',
-                objective5Title: 'അറിവിലൂടെ ശാക്തീകരിക്കുക',
-                objective5Text: 'സങ്കീർണ്ണമായ കാർഷിക വിവരങ്ങൾ എല്ലാ കർഷകർക്കും മനസ്സിലാക്കാൻ കഴിയുന്നതാക്കുക.',
-                objective6Title: 'തൽക്ഷണ പിന്തുണ നൽകുക',
-                objective6Text: 'കർഷകരുടെ ചോദ്യങ്ങൾക്ക് ഉടനടി മറുപടി നൽകാൻ 24/7 ഓട്ടോമേറ്റഡ് ഉപദേശക സേവനങ്ങൾ നൽകുക.',
-                objective7Title: 'വിവര വിടവുകൾ നികത്തുക',
-                objective7Text: 'പ്രസക്തമായ സർക്കാർ പദ്ധതികൾ, വിപണി വിവരങ്ങൾ, വിദഗ്ധ ശൃംഖലകൾ എന്നിവയിലേക്ക് കർഷകരെ ബന്ധിപ്പിക്കുക.',
-                objective8Title: 'സമൂഹത്തിന്റെ വളർച്ചയെ പരിപോഷിപ്പിക്കുക',
-                objective8Text: 'കർഷകർക്ക് അറിവുകളും അനുഭവങ്ങളും പങ്കിടാൻ ഒരു വേദി ഉണ്ടാക്കുക.',
+                featuresHeading: 'പ്രധാന സവിശേഷതകൾ', feature1Title: 'കീടരോഗ കണ്ടെത്തൽ', feature1Text: 'വിളകളുടെ ചിത്രങ്ങൾ അപ്‌ലോഡ് ചെയ്താൽ പ്രശ്നങ്ങൾ തൽക്ഷണം തിരിച്ചറിയാനും പരിഹാരങ്ങൾ നേടാനും കഴിയും.',
+                feature2Title: 'ഹൈപ്പർ-ലോക്കൽ കാലാവസ്ഥാ പ്രവചനങ്ങൾ', feature2Text: 'നിങ്ങളുടെ കൃത്യമായ ഫാം ലൊക്കേഷന് അനുയോജ്യമായ കാലാവസ്ഥാ വിവരങ്ങളും കാലാവസ്ഥാ ഉൾക്കാഴ്ചകളും നേടുക.',
+                feature3Title: 'വിള പരിപാലനം', feature3Text: 'വിത്തുകൾ വിതയ്ക്കൽ, ജലസേചനം, വളമിടൽ, വിളവെടുപ്പ് എന്നിവയ്ക്കുള്ള വിദഗ്ദ്ധ ഉപദേശങ്ങൾ നേടുക.',
+                feature4Title: 'വിപണി വില വിശകലനം', feature4Text: 'ലാഭം വർദ്ധിപ്പിക്കുന്നതിന് നിങ്ങളുടെ ഉൽപ്പന്നങ്ങളുടെ തത്സമയ വിപണി വിലയെക്കുറിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുക.',
+                feature5Title: 'സർക്കാർ പദ്ധതികളും സബ്സിഡികളും', feature5Text: 'പ്രസക്തമായ സർക്കാർ പദ്ധതികളെയും സാമ്പത്തിക സഹായത്തെയും കുറിച്ചുള്ള വിവരങ്ങൾ നേടുക.',
+                feature6Title: 'ബഹുഭാഷാ പിന്തുണ', feature6Text: 'തടസ്സങ്ങളില്ലാത്ത ആശയവിനിമയത്തിനായി നിങ്ങൾക്ക് ഇഷ്ടപ്പെട്ട പ്രാദേശിക ഭാഷയിൽ കൃഷി മിത്ര AI-യുമായി സംവദിക്കാം.',
+                objectivesHeading: 'ഞങ്ങളുടെ പ്രധാന ലക്ഷ്യങ്ങൾ', objective1Title: 'വിളവ് വർദ്ധിപ്പിക്കുക', objective1Text: 'വിഭവങ്ങളുടെ ഏറ്റവും മികച്ച വിനിയോഗത്തിനും മെച്ചപ്പെട്ട കാർഷിക ഉത്പാദനക്ഷമതയ്ക്കും വേണ്ടി ഡാറ്റാധിഷ്ഠിത ഉൾക്കാഴ്ചകൾ നൽകുക.',
+                objective2Title: 'കർഷകരുടെ വരുമാനം വർദ്ധിപ്പിക്കുക', objective2Text: 'കർഷകർക്ക് ഉയർന്ന ലാഭം നേടുന്നതിന് വിപണി വിവരങ്ങളും മികച്ച രീതികളും നൽകുക.',
+                objective3Title: 'കാർഷിക അപകടസാധ്യതകൾ കുറയ്ക്കുക', objective3Text: 'നഷ്ടം കുറയ്ക്കുന്നതിന് കീടങ്ങൾ, രോഗങ്ങൾ, പ്രതികൂല കാലാവസ്ഥാ സാഹചര്യങ്ങൾ എന്നിവ നേരത്തെ കണ്ടെത്തുക.',
+                objective4Title: 'സുസ്ഥിര സമ്പ്രദായങ്ങൾ പ്രോത്സാഹിപ്പിക്കുക', objective4Text: 'പരിസ്ഥിതി സൗഹൃദ കൃഷിരീതികൾ, ജലസംരക്ഷണം, മണ്ണിന്റെ ആരോഗ്യ പരിപാലനം എന്നിവയ്ക്ക് വേണ്ടി പ്രവർത്തിക്കുക.',
+                objective5Title: 'അറിവിലൂടെ ശാക്തീകരിക്കുക', objective5Text: 'സങ്കീർണ്ണമായ കാർഷിക വിവരങ്ങൾ എല്ലാ കർഷകർക്കും മനസ്സിലാക്കാൻ കഴിയുന്നതാക്കുക.',
+                objective6Title: 'തൽക്ഷണ പിന്തുണ നൽകുക', objective6Text: 'കർഷകരുടെ ചോദ്യങ്ങൾക്ക് ഉടനടി മറുപടി നൽകാൻ 24/7 ഓട്ടോമേറ്റഡ് ഉപദേശക സേവനങ്ങൾ നൽകുക.',
+                objective7Title: 'വിവര വിടവുകൾ നികത്തുക', objective7Text: 'പ്രസക്തമായ സർക്കാർ പദ്ധതികൾ, വിപണി വിവരങ്ങൾ, വിദഗ്ധ ശൃംഖലകൾ എന്നിവയിലേക്ക് കർഷകരെ ബന്ധിപ്പിക്കുക.',
+                objective8Title: 'സമൂഹത്തിന്റെ വളർച്ചയെ പരിപോഷിപ്പിക്കുക', objective8Text: 'കർഷകർക്ക് അറിവുകളും അനുഭവങ്ങളും പങ്കിടാൻ ഒരു വേദി ഉണ്ടാക്കുക.',
                 contactHeading: 'നിങ്ങളുടെ കൃഷി മാറ്റിമറിക്കാൻ തയ്യാറാണോ?',
                 contactText: 'ഇന്ന് തന്നെ കൃഷി മിത്ര AI കമ്മ്യൂണിറ്റിയിൽ ചേരുക, കൃഷിയുടെ ഭവിഷ്യത്ത് അനുഭവിക്കുക. ഓരോ ഘട്ടത്തിലും നിങ്ങളെ പിന്തുണയ്ക്കാൻ ഞങ്ങളുടെ ബുദ്ധിപരമായ സിസ്റ്റം ഇവിടെയുണ്ട്.',
-                getStartedButton: 'തുടങ്ങുക',
-                footerText: '© 2023 കൃഷി മിത്ര AI. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.',
-                langEnglish: 'English',
-                langHindi: 'ഹിन्दी',
-                langKannada: 'ಕನ್ನಡ',
-                langMalayalam: 'മലയാളം'
+                getStartedButton: 'തുടങ്ങുക', footerText: '© 2023 കൃഷി മിത്ര AI. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.',
+                langEnglish: 'English', langHindi: 'ഹിन्दी', langKannada: 'കನ್ನಡ', langMalayalam: 'മലയാളം'
             }
         };
 
         const elementsToTranslate = {
-            title: document.getElementById('title'),
-            headerTitle: document.getElementById('header-title'),
-            navAbout: document.getElementById('nav-about'),
-            navFeatures: document.getElementById('nav-features'),
-            navObjectives: document.getElementById('nav-objectives'),
-            navContact: document.getElementById('nav-contact'),
-            heroHeading: document.getElementById('hero-heading'),
-            heroSubheading: document.getElementById('hero-subheading'),
-            chatButton: document.getElementById('chat-button'),
-            learnMoreButton: document.getElementById('learn-more-button'),
-            aboutHeading: document.getElementById('about-heading'),
-            aboutText: document.getElementById('about-text'),
-            featuresHeading: document.getElementById('features-heading'),
-            feature1Title: document.getElementById('feature1-title'),
-            feature1Text: document.getElementById('feature1-text'),
-            feature2Title: document.getElementById('feature2-title'),
-            feature2Text: document.getElementById('feature2-text'),
-            feature3Title: document.getElementById('feature3-title'),
-            feature3Text: document.getElementById('feature3-text'),
-            feature4Title: document.getElementById('feature4-title'),
-            feature4Text: document.getElementById('feature4-text'),
-            feature5Title: document.getElementById('feature5-title'),
-            feature5Text: document.getElementById('feature5-text'),
-            feature6Title: document.getElementById('feature6-title'),
-            feature6Text: document.getElementById('feature6-text'),
-            objectivesHeading: document.getElementById('objectives-heading'),
-            objective1Title: document.getElementById('objective1-title'),
-            objective1Text: document.getElementById('objective1-text'),
-            objective2Title: document.getElementById('objective2-title'),
-            objective2Text: document.getElementById('objective2-text'),
-            objective3Title: document.getElementById('objective3-title'),
-            objective3Text: document.getElementById('objective3-text'),
-            objective4Title: document.getElementById('objective4-title'),
-            objective4Text: document.getElementById('objective4-text'),
-            objective5Title: document.getElementById('objective5-title'),
-            objective5Text: document.getElementById('objective5-text'),
-            objective6Title: document.getElementById('objective6-title'),
-            objective6Text: document.getElementById('objective6-text'),
-            objective7Title: document.getElementById('objective7-title'),
-            objective7Text: document.getElementById('objective7-text'),
-            objective8Title: document.getElementById('objective8-title'),
-            objective8Text: document.getElementById('objective8-text'),
-            contactHeading: document.getElementById('contact-heading'),
-            contactText: document.getElementById('contact-text'),
-            getStartedButton: document.getElementById('get-started-button'),
-            footerText: document.getElementById('footer-text'),
-            langEnglish: document.getElementById('lang-en'),
-            langHindi: document.getElementById('lang-hi'),
-            langKannada: document.getElementById('lang-kn'),
-            langMalayalam: document.getElementById('lang-ml')
+            title: document.getElementById('title'), headerTitle: document.getElementById('header-title'),
+            navAbout: document.getElementById('nav-about'), navFeatures: document.getElementById('nav-features'),
+            navObjectives: document.getElementById('nav-objectives'), navContact: document.getElementById('nav-contact'),
+            heroHeading: document.getElementById('hero-heading'), heroSubheading: document.getElementById('hero-subheading'),
+            movingLine: document.getElementById('moving-line'), chatButton: document.getElementById('chat-button'),
+            learnMoreButton: document.getElementById('learn-more-button'), aboutHeading: document.getElementById('about-heading'),
+            aboutText: document.getElementById('about-text'), featuresHeading: document.getElementById('features-heading'),
+            feature1Title: document.getElementById('feature1-title'), feature1Text: document.getElementById('feature1-text'),
+            feature2Title: document.getElementById('feature2-title'), feature2Text: document.getElementById('feature2-text'),
+            feature3Title: document.getElementById('feature3-title'), feature3Text: document.getElementById('feature3-text'),
+            feature4Title: document.getElementById('feature4-title'), feature4Text: document.getElementById('feature4-text'),
+            feature5Title: document.getElementById('feature5-title'), feature5Text: document.getElementById('feature5-text'),
+            feature6Title: document.getElementById('feature6-title'), feature6Text: document.getElementById('feature6-text'),
+            objectivesHeading: document.getElementById('objectives-heading'), objective1Title: document.getElementById('objective1-title'),
+            objective1Text: document.getElementById('objective1-text'), objective2Title: document.getElementById('objective2-title'),
+            objective2Text: document.getElementById('objective2-text'), objective3Title: document.getElementById('objective3-title'),
+            objective3Text: document.getElementById('objective3-text'), objective4Title: document.getElementById('objective4-title'),
+            objective4Text: document.getElementById('objective4-text'), objective5Title: document.getElementById('objective5-title'),
+            objective5Text: document.getElementById('objective5-text'), objective6Title: document.getElementById('objective6-title'),
+            objective6Text: document.getElementById('objective6-text'), objective7Title: document.getElementById('objective7-title'),
+            objective7Text: document.getElementById('objective7-text'), objective8Title: document.getElementById('objective8-title'),
+            objective8Text: document.getElementById('objective8-text'), contactHeading: document.getElementById('contact-heading'),
+            contactText: document.getElementById('contact-text'), getStartedButton: document.getElementById('get-started-button'),
+            footerText: document.getElementById('footer-text'), langEnglish: document.getElementById('lang-en'),
+            langHindi: document.getElementById('lang-hi'), langKannada: document.getElementById('lang-kn'),
+            langMalayalam: document.getElementById('lang-ml'),
+            selectStateLabel: document.getElementById('select-state-label'), // New element for translation
+            weatherStatusMessage: document.getElementById('weather-status-message'), // New element for translation
+            modalHeadingText: document.getElementById('modal-heading-text'), // New element for translation
+            modalCloseButton: document.getElementById('modal-close-button'), // New element for translation
         };
 
         function setLanguage(lang) {
+            currentLanguage = lang;
             const t = translations[lang];
+            
+            // Iterate over all elements to translate
             for (const key in elementsToTranslate) {
                 const element = elementsToTranslate[key];
                 if (element && t[key]) {
                     if (key === 'heroHeading') {
                         element.innerHTML = t[key];
+                    } else if (key.endsWith('Button') || key === 'chatButton' || key === 'learnMoreButton' || key === 'getStartedButton' || key === 'headerTitle') {
+                        const icon = element.querySelector('i');
+                        element.innerHTML = (icon ? icon.outerHTML + ' ' : '') + t[key];
+                    } else if (key === 'title') {
+                        document.title = t[key];
                     } else {
                         element.innerText = t[key];
                     }
                 }
             }
+             // Update the moving line separately
+             document.getElementById('moving-line').innerText = t.movingLine;
+             
+             // Update the placeholder text and initial weather status
+             document.getElementById('select-state-label').innerText = t.selectStateLabel;
+             document.getElementById('weather-status-message').innerText = t.initialWeatherMessage;
+             document.getElementById('modal-heading-text').innerText = t.weatherModalHeading;
+             document.getElementById('modal-close-button').innerText = "Close"; // Standard button text (can be localized further)
         }
+
+        // --- Core Weather Functions ---
+        function populateStateDropdown() {
+            const select = document.getElementById('state-select');
+            select.innerHTML = ''; // Clear existing options
+            
+            // Add a default prompt option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.text = "--- Select a State ---";
+            select.appendChild(defaultOption);
+
+            indianStates.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.text = state;
+                select.appendChild(option);
+            });
+        }
+        
+        function getWeatherAdvisory(state) {
+            // Use the state name to get simulated data, or fall back to 'Default'
+            const data = simulatedWeather[state] || simulatedWeather["Default"];
+            return data;
+        }
+
+        function displayWeatherModal(state) {
+            const currentLang = getCurrentLanguage();
+            const t = translations[currentLang];
+            const modal = document.getElementById('dynamic-modal');
+            const modalHeading = document.getElementById('modal-heading-text');
+            const infoBox = document.getElementById('weather-info-box');
+            
+            modalHeading.innerText = t.weatherModalHeading;
+
+            if (!state) {
+                infoBox.innerHTML = `<p class="text-center font-semibold text-lg" id="weather-status-message">${t.initialWeatherMessage}</p>`;
+                return;
+            }
+
+            // 1. Show Loading State
+            infoBox.innerHTML = `<p class="text-center font-semibold text-lg text-green-600"><i class="fas fa-sync fa-spin mr-2"></i>${t.weatherLoading} ${state}...</p>`;
+            
+            // 2. Simulate API Fetch Delay
+            setTimeout(() => {
+                const weatherData = getWeatherAdvisory(state);
+                
+                // 3. Inject Simulated Data
+                infoBox.innerHTML = `
+                    <div class="space-y-3">
+                        <p class="text-xl font-bold"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>${t.weatherLocation(state)}</p>
+                        <p><i class="fas fa-thermometer-half text-red-500 mr-2"></i>${t.weatherTemp(weatherData.temp)}</p>
+                        <p><i class="fas fa-sun text-yellow-500 mr-2"></i>${t.weatherCondition(weatherData.condition)}</p>
+                        <p><i class="fas fa-wind text-blue-500 mr-2"></i>${t.weatherWind(weatherData.wind || "N/A")}</p>
+                        <div class="mt-4 p-3 bg-green-100 rounded-lg border-l-4 border-green-500">
+                            <p class="font-semibold text-green-800">${t.weatherAdviceHeader}</p>
+                            <p class="text-base text-gray-700">${weatherData.advice}</p>
+                        </div>
+                    </div>
+                `;
+            }, 1000); // 1 second delay for simulation
+        }
+
+        // --- Event Listeners and Initializers ---
+
+        document.getElementById('weather-button').addEventListener('click', function() {
+            populateStateDropdown();
+            // Display modal with initial message
+            displayWeatherModal(null); 
+            document.getElementById('dynamic-modal').classList.add('active');
+        });
+        
+        document.getElementById('state-select').addEventListener('change', function() {
+            const selectedState = this.value;
+            displayWeatherModal(selectedState);
+        });
+
+        document.getElementById('modal-close-button').addEventListener('click', function() {
+            document.getElementById('dynamic-modal').classList.remove('active');
+        });
+
+        // Helper function to get current language based on button style
+        function getCurrentLanguage() {
+            let lang = 'en';
+            // Find the button with the inline green background (our active indicator)
+            const activeBtn = document.querySelector('.hero-section button[style*="#22c55e"]');
+            if (activeBtn) {
+                 lang = activeBtn.id.replace('lang-', '');
+            }
+            return lang;
+        }
+        
+        // Initialize language and ensure correct styling on load
+        window.onload = function() {
+            setLanguage('en'); 
+            document.getElementById('lang-en').style.backgroundColor = '#22c55e';
+            document.getElementById('lang-en').classList.add('button-primary');
+        };
+
+        // Event listeners for language buttons to update style
+        document.querySelectorAll('.hero-section button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove primary styling from all buttons
+                document.querySelectorAll('.hero-section button').forEach(btn => {
+                    btn.classList.remove('button-primary');
+                    btn.style.backgroundColor = ''; // Clear inline style
+                    btn.classList.add('bg-gray-600', 'hover:bg-gray-700', 'text-white');
+                });
+                
+                // Add primary styling to the clicked button
+                this.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                this.style.backgroundColor = '#22c55e';
+                this.classList.add('button-primary');
+            });
+        });
     </script>
 
 </body>
